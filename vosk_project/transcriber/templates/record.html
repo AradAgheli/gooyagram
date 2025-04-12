@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تبدیل گفتار به متن</title>
+    <style>
+        body {
+            font-family: 'Vazir', sans-serif;
+            background-color: #ffffff;
+            color: #122e95;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 1rem;
+        }
+
+        button {
+            background-color: #122e95;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            padding: 12px 24px;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            margin: 10px;
+        }
+
+        button:hover {
+            background-color: #0e2377;
+        }
+
+        #result {
+            max-width: 600px;
+            margin-top: 2rem;
+            text-align: center;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            padding: 20px;
+            border: 2px solid #122e95;
+            border-radius: 16px;
+        }
+    </style>
+</head>
+<body>
+    <a href="https://hooshmate.ir"><img src="static/hooshmate.png" alt="Hoshmate logo" style="height: 200px; width: 200px;"></a>
+    <h1>تبدیل گفتار به متن</h1>
+    <button id="startBtn">شروع ضبط</button>
+    <button id="stopBtn" disabled>پایان ضبط</button>
+    <div id="result"></div>
+
+    <script>
+        let mediaRecorder;
+        let audioChunks = [];
+
+        const startBtn = document.getElementById("startBtn");
+        const stopBtn = document.getElementById("stopBtn");
+        const resultDiv = document.getElementById("result");
+
+        startBtn.addEventListener("click", async () => {
+            const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+            mediaRecorder = new MediaRecorder(stream);
+
+            mediaRecorder.ondataavailable = event => {
+                audioChunks.push(event.data);
+            };
+
+            mediaRecorder.onstop = async () => {
+                const blob = new Blob(audioChunks, { type: 'audio/webm' });
+                const formData = new FormData();
+                formData.append("audio_data", blob);
+
+                resultDiv.innerText = "در حال پردازش...";
+
+                const response = await fetch("/", {
+                    method: "POST",
+                    body: formData
+                });
+
+                const data = await response.json();
+                resultDiv.innerText = data.text;
+                audioChunks = [];
+            };
+
+            mediaRecorder.start();
+            startBtn.disabled = true;
+            stopBtn.disabled = false;
+        });
+
+        stopBtn.addEventListener("click", () => {
+            mediaRecorder.stop();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+    </script>
+</body>
+</html>

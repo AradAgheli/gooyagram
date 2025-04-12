@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <title>ورود به سامانه</title>
+    <style>
+        body {
+            background-color: #ffffff;
+            font-family: 'Vazir', sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            color: #122e95;
+        }
+        .login-box {
+            border: 2px solid #122e95;
+            border-radius: 16px;
+            padding: 40px;
+            width: 320px;
+            text-align: center;
+        }
+        .login-box h2 {
+            margin-bottom: 20px;
+        }
+        input[type=text], input[type=password] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #122e95;
+            border-radius: 10px;
+        }
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #122e95;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1rem;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0e2377;
+        }
+    </style>
+</head>
+<body>
+    <form method="post" class="login-box">
+        {% csrf_token %}
+        <h2>ورود به سامانه</h2>
+        {{ form.username }}
+        {{ form.password }}
+        <button type="submit">ورود</button>
+        {% if form.errors %}
+            <p style="color: red; margin-top: 10px;">نام کاربری یا رمز عبور اشتباه است.</p>
+        {% endif %}
+    </form>
+</body>
+</html>
